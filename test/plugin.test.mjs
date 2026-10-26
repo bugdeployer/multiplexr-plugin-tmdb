@@ -47,18 +47,18 @@ test('starter displays its declared setting through the host API', () => project
   const { response, calls } = await invoke(root);
   assert.deepEqual(response, { v: 1, id: 'test-1', result: { kind: 'text', text: 'Hello from your plugin.' } });
   assert.equal(calls.length, 1);
-}, false, ROOT));
+}));
 
 test('permission denial remains a permission error', () => project(async root => {
   const { response } = await invoke(root, 'plugin.open', true);
   assert.equal(response.error.code, 'permission_denied');
-}, false, ROOT));
+}));
 
 test('unknown handler cannot call the host', () => project(async root => {
   const { response, calls } = await invoke(root, 'plugin.unknown');
   assert.equal(response.error.code, 'unsupported_capability');
   assert.equal(calls.length, 0);
-}, false, ROOT));
+}));
 
 test('configuration updates manifest fields, source namespace and package identity', () => project(async root => {
   await configure('org.example.testplugin', 'Test plugin', root);

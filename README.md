@@ -1,10 +1,18 @@
-# TMDB plugin for Multiplexr
+# TMDB metadata for Multiplexr
 
-Development starter for TMDB metadata. Provider lookup is not implemented yet. The current plugin contains a sample settings page and text destination; it makes no network requests.
+Searches movies and TV using TMDB. Returns title, synopsis, original language, release date, year and TMDB identity.
+
+In **Manage > Permissions**, allow the collection and network destination. In **Manage > Credentials**, select `https://api.themoviedb.org` and paste your **API Read Access Token**, not the v3 API key. Enable the plugin, then choose TMDB in Find metadata.
+
+Uses the [TMDB API](https://developer.themoviedb.org/docs/authentication-application). This product uses the TMDB API but is not endorsed or certified by TMDB.
+
+## Install
+
+Requires the patched Multiplexr plugin host (0.5.1 or newer). Download the signed `.mpx.json` from Releases and install it through **Settings > Plugins & themes**. Review access before enabling. The 0.1.0 release was a starter and has no metadata handler.
 
 ## Development
 
-Requires Node.js 22 or newer.
+Node.js 22 or newer.
 
 ```sh
 npm ci
@@ -13,47 +21,6 @@ npm test
 npm run build
 ```
 
-## Sign and install
+Tests use the bundled plugin entrypoint with host fixtures, not service credentials. To sign, run `npm run sign -- --key /private/publisher.pem`. Keep the publisher key outside the repository. The release workflow uses the `PLUGIN_SIGNING_KEY` Actions secret.
 
-Generate a publisher key outside the repository:
-
-```sh
-openssl ecparam -name prime256v1 -genkey -noout -out /private/publisher.pem
-npm run sign -- --key /private/publisher.pem
-```
-
-Install `dist/<plugin-id>-<version>.mpx.json` through **Settings > Plugins & themes** in Multiplexr. Review permissions and enable the plugin. The `.proof.json` file is a build intermediate, not an installable package.
-
-Keep the publisher key for future updates. Never commit it or include service credentials in the source. The template identity must be changed before signing.
-
-## Publish updates
-
-1. Add your PEM publisher key as the repository Actions secret `PLUGIN_SIGNING_KEY`.
-2. Set the version in `plugin/manifest.json` and commit your changes.
-3. Push a matching tag, such as `v0.1.0`.
-
-The release workflow runs checks and publishes the signed package and `SHA256SUMS`. Local signing also accepts the `PLUGIN_SIGNING_KEY` environment variable instead of `--key`.
-
-## Network providers
-
-Declare `http.request` in the manifest and list exact HTTPS origins in `plugin/network-origins.json`, for example `https://api.example.org`. Add `credentials.use` when requesting host-managed credentials. Configure credentials in Multiplexr; plugin code does not read the secret.
-
-The current host injects Bearer credentials and supports bounded HTTPS GET requests. Confirm that a provider fits that contract before implementing it. Use mock responses in tests rather than live service credentials.
-
-## Files
-
-| Path | Purpose |
-| --- | --- |
-| `plugin/` | Manifest, handlers and approved network origins |
-| `scripts/` | Configuration, build, signing and release tools |
-| `test/` | Host interaction, identity, signing and permission tests |
-| `types/` | SDK globals for JavaScript type checking |
-| `dist/` | Generated artifacts; ignored by Git |
-
-Dependencies are locked to SDK 1.1.0 and TypeScript 5.9.3. Plugin code targets Multiplexr protocol 1, not Node.js. Tests execute only trusted source fixtures; Node's VM is not a production plugin sandbox.
-
-[API reference](https://github.com/bugdeployer/Multiplexr/blob/main/packages/multiplexr_plugin_sdk/API.md) · [SDK source](https://github.com/bugdeployer/Multiplexr/tree/main/packages/multiplexr_plugin_sdk)
-
-## License
-
-GPL-3.0-only. Keep the license when using this template.
+[Plugin SDK](https://github.com/bugdeployer/Multiplexr/tree/main/packages/multiplexr_plugin_sdk) · GPL-3.0-only.

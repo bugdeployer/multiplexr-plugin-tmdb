@@ -1,6 +1,6 @@
 {
   "id": "com.bugdeployer.tmdb",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "name": "TMDB metadata",
   "entry": "plugin.js",
   "protocol": {
@@ -9,41 +9,21 @@
   },
   "capabilities": {
     "required": [
-      "ui.present",
-      "settings.read",
-      "settings.write"
+      "metadata.provide",
+      "http.request",
+      "credentials.use"
     ],
     "optional": []
   },
   "contributions": [
     {
-      "id": "com.bugdeployer.tmdb:open",
-      "family": "ui.destination",
-      "title": "Open plugin",
-      "handler": "plugin.open"
-    },
-    {
-      "id": "com.bugdeployer.tmdb:settings",
-      "family": "settings.section",
-      "title": "Plugin settings",
-      "description": "Choose the message shown by the plugin.",
-      "icon": "extension",
-      "schemaVersion": 1,
-      "scopes": [
-        "app"
-      ],
-      "fields": [
-        {
-          "id": "com.bugdeployer.tmdb:greeting",
-          "type": "text",
-          "label": "Message",
-          "accessibleLabel": "Plugin message",
-          "maxLength": 200,
-          "default": "Hello from your plugin.",
-          "scopes": [
-            "app"
-          ]
-        }
+      "id": "com.bugdeployer.tmdb:metadata",
+      "family": "metadata.provider",
+      "title": "TMDB",
+      "handler": "metadata.search",
+      "kinds": [
+        "movie",
+        "television"
       ]
     }
   ]
