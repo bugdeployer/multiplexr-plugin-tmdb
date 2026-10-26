@@ -1,4 +1,4 @@
-const PLUGIN_ID = "org.example.plugin";
+const PLUGIN_ID = "com.bugdeployer.tmdb";
 
 /** @param {import('multiplexr_plugin_sdk').Request} request */
 function multiplexrEntry(request) {

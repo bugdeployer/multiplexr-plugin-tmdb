@@ -1,22 +1,17 @@
-# Multiplexr plugin template
+# TMDB plugin for Multiplexr
 
-A starter plugin with a UI destination and one app setting. Use it for metadata providers, library tools or other [plugin contributions](https://github.com/bugdeployer/Multiplexr/blob/main/docs/plugins.md).
+Development starter for TMDB metadata. Provider lookup is not implemented yet. The current plugin contains a sample settings page and text destination; it makes no network requests.
 
-## Create a plugin
+## Development
 
-Choose **Use this template** on GitHub, create your repository, and clone it. Requires Node.js 22 or newer.
+Requires Node.js 22 or newer.
 
 ```sh
 npm ci
-npm run configure -- --id org.yourname.myplugin --name "My plugin"
 npm run check
 npm test
 npm run build
 ```
-
-Use a unique namespace you control. Configuration updates the contribution IDs, setting IDs and source namespace together. Edit `plugin/manifest.json` for permissions and contributions; implement handlers in `plugin/plugin.js`.
-
-The starter reads its message from plugin settings and returns a host-rendered text node. It requests UI and settings permissions, with no network or library access.
 
 ## Sign and install
 
