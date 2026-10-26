@@ -1,0 +1,20 @@
+{
+  "name": "multiplexr-plugin-template",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "GPL-3.0-only",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "configure": "node scripts/configure.mjs",
+    "build": "node scripts/build.mjs",
+    "check": "tsc --noEmit",
+    "test": "node --test test/*.test.mjs",
+    "sign": "node scripts/sign.mjs",
+    "release": "node scripts/release.mjs"
+  },
+  "devDependencies": {
+    "multiplexr_plugin_sdk": "https://github.com/bugdeployer/Multiplexr/releases/download/v0.5.0/multiplexr_plugin_sdk-1.1.0.tgz",
+    "typescript": "5.9.3"
+  }
+}

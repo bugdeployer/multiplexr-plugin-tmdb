@@ -1,0 +1,39 @@
+{
+  "id": "org.example.plugin",
+  "version": "0.1.0",
+  "name": "Example plugin",
+  "entry": "plugin.js",
+  "protocol": { "min": 1, "max": 1 },
+  "capabilities": {
+    "required": ["ui.present", "settings.read", "settings.write"],
+    "optional": []
+  },
+  "contributions": [
+    {
+      "id": "org.example.plugin:open",
+      "family": "ui.destination",
+      "title": "Open plugin",
+      "handler": "plugin.open"
+    },
+    {
+      "id": "org.example.plugin:settings",
+      "family": "settings.section",
+      "title": "Plugin settings",
+      "description": "Choose the message shown by the plugin.",
+      "icon": "extension",
+      "schemaVersion": 1,
+      "scopes": ["app"],
+      "fields": [
+        {
+          "id": "org.example.plugin:greeting",
+          "type": "text",
+          "label": "Message",
+          "accessibleLabel": "Plugin message",
+          "maxLength": 200,
+          "default": "Hello from your plugin.",
+          "scopes": ["app"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+*.log
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+.env
+.env.*
+.npmrc
+.DS_Store
