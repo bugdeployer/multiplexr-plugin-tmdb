@@ -36,5 +36,8 @@
     }
   ],
   "description": "Movie and TV information and posters from TMDB. Requires a TMDB API Read Access Token.",
-  "author": "bugdeployer"
+  "author": "bugdeployer",
+  "credentialOrigins": [
+    "https://api.themoviedb.org"
+  ]
 }
