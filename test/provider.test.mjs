@@ -15,7 +15,7 @@ function invoke(params = {}, options = {}) {
     assert.ok(['http.get','http.post'].includes(request.method));
     assert.equal(new URL(request.params.url).origin, origin);
     return JSON.stringify({v:1,id:request.id,...(options.denied ? {error:{code:'permission_denied'}} :
-      {result:{status:options.status ?? 200,body:options.body ?? JSON.stringify(fixture)}})});
+      {result:{status:options.status ?? 200,body:options.body ?? JSON.stringify(request.params.url.includes('/search/') ? fixture : {genres:[{name:'Science Fiction'},{name:'Drama'}],credits:{crew:[{job:'Director',name:'Jane Director'},{job:'Writer',name:'Someone Else'}]},poster_path:'/ExamplePoster123.jpg',backdrop_path:'/ExampleBackdrop.jpg'})}})});
   }});
   runInContext(artifact.code, context, {timeout:1000});
   const request = {v:1,id:'search',method:'metadata.search',params:{query:'Moon & stars',kind,...params}};
@@ -28,6 +28,9 @@ test('installed bundle registers a real provider and normalizes bounded unique c
   assert.equal(response.result.items.length, 1);
   assert.equal(response.result.items[0].id, value.id + ':' + local);
   assert.equal(response.result.items[0].title, 'Moon & stars');
+  assert.deepEqual(response.result.items[0].fields.genres, ['Science Fiction', 'Drama']);
+  assert.equal(response.result.items[0].fields.director, 'Jane Director');
+  assert.equal(calls.filter(c=>c.method.startsWith('http.')).length, 2);
   assert.equal(response.result.nextCursor, "2");
   const http=calls.find(c=>c.method.startsWith('http.'));
   if (kind==='movie' || origin.includes('openlibrary') || origin.includes('audible')) assert.ok(http.params.url.includes('Moon%20%26%20stars'));
@@ -50,7 +53,7 @@ test('denied credentials, service failures and invalid payloads keep stable erro
 
 test('movie candidates carry an owned poster handle', () => {
   const {response} = invoke();
-  assert.equal(response.result.items[0].artwork, value.id + ':poster.ExamplePoster123');
+  assert.equal(response.result.items[0].artwork, value.id + ':images.ExamplePoster123.ExampleBackdrop');
 });
 test('poster resolution returns only the approved image URL and never sends credentials', () => {
   let calls = 0;
@@ -63,4 +66,21 @@ test('poster resolution returns only the approved image URL and never sends cred
   input.params.artwork = 'org.foreign:poster.ExamplePoster123';
   const bad = JSON.parse(JSON.stringify(runInContext(`multiplexrEntry(${JSON.stringify(input)})`,context,{timeout:1000})));
   assert.ok(bad.error);
+});
+
+ test('combined image handle resolves both roles without network credentials', () => {
+  const context = createContext({__hostCall: () => {throw Error('Unexpected network request');}});
+  runInContext(artifact.code, context);
+  const input = {v:1,id:'images',method:'artwork.search',params:{title:'opaque',roles:['poster','backdrop'],artwork:value.id+':images.ExamplePoster123.ExampleBackdrop'}};
+  const response = JSON.parse(JSON.stringify(runInContext(`multiplexrEntry(${JSON.stringify(input)})`,context)));
+  assert.deepEqual(response.result.items.map(i=>i.role), ['poster','backdrop']);
+  assert.equal(response.result.items[1].url,'https://image.tmdb.org/t/p/w780/ExampleBackdrop.jpg');
+});
+ test('search pagination bounds detail calls and advances within the TMDB page', () => {
+  const body = JSON.stringify({results:Array.from({length:20},(_,i)=>({id:i+1,title:'Film '+i})),total_pages:1});
+  const {response,calls}=invoke({cursor:'2'}, {body});
+  assert.equal(response.result.items[0].id,value.id+':movie.6');
+  assert.equal(response.result.items.length,5);
+  assert.equal(response.result.nextCursor,'3');
+  assert.equal(calls.filter(c=>c.method.startsWith('http.')).length,6);
 });
