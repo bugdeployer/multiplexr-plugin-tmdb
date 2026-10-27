@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createContext, runInContext} from 'node:vm';
 import {ROOT, build, manifest} from '../scripts/project.mjs';
-const fixture = {"results": [{"id": 11, "title": "Moon & stars", "overview": "A story", "release_date": "2009-07-10", "original_language": "en"}, {"id": 11, "title": "Duplicate"}, {"id": null, "title": "Invalid"}], "total_pages": 2};
+const fixture = {"results": [{"id": 11, "title": "Moon & stars", "overview": "A story", "release_date": "2009-07-10", "original_language": "en", "poster_path": "/ExamplePoster123.jpg"}, {"id": 11, "title": "Duplicate"}, {"id": null, "title": "Invalid"}], "total_pages": 2};
 const kind = "movie", local = "movie.11", origin = "https://api.themoviedb.org";
 const value = await manifest();
 const artifact = JSON.parse(await readFile(await build(), 'utf8'));
@@ -46,4 +46,21 @@ test('denied credentials, service failures and invalid payloads keep stable erro
   for (const [options,code] of [[{denied:true},'permission_denied'],[{status:401},'permission_denied'],[{status:429},'resource_limit'],[{status:503},'runtime_failure'],[{body:'<html>secret</html>'},'invalid_response'],[{body:'{}'},'invalid_response']]) {
     const {response}=invoke({},options); assert.equal(response.error.code,code); assert.ok(!JSON.stringify(response).includes('secret'));
   }
+});
+
+test('movie candidates carry an owned poster handle', () => {
+  const {response} = invoke();
+  assert.equal(response.result.items[0].artwork, value.id + ':poster.ExamplePoster123');
+});
+test('poster resolution returns only the approved image URL and never sends credentials', () => {
+  let calls = 0;
+  const context = createContext({__hostCall: () => { calls++; throw Error('Unexpected network request'); }});
+  runInContext(artifact.code, context, {timeout:1000});
+  const input = {v:1,id:'poster',method:'artwork.search',params:{title:'opaque',roles:['poster'],artwork:value.id+':poster.ExamplePoster123'}};
+  const response = JSON.parse(JSON.stringify(runInContext(`multiplexrEntry(${JSON.stringify(input)})`,context,{timeout:1000})));
+  assert.equal(response.result.items[0].url, 'https://image.tmdb.org/t/p/w342/ExamplePoster123.jpg');
+  assert.equal(calls, 0);
+  input.params.artwork = 'org.foreign:poster.ExamplePoster123';
+  const bad = JSON.parse(JSON.stringify(runInContext(`multiplexrEntry(${JSON.stringify(input)})`,context,{timeout:1000})));
+  assert.ok(bad.error);
 });

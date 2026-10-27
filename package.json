@@ -1,6 +1,6 @@
 {
   "name": "com-bugdeployer-tmdb",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "license": "GPL-3.0-only",
@@ -16,7 +16,7 @@
     "release": "node scripts/release.mjs"
   },
   "devDependencies": {
-    "multiplexr_plugin_sdk": "https://github.com/bugdeployer/Multiplexr/releases/download/sdk-v1.2.0/multiplexr_plugin_sdk-1.2.0.tgz",
+    "multiplexr_plugin_sdk": "file:vendor/multiplexr_plugin_sdk-1.3.0.tgz",
     "typescript": "5.9.3"
   }
 }

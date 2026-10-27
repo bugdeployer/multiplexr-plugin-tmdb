@@ -24,3 +24,10 @@ npm run build
 Tests use the bundled plugin entrypoint with host fixtures, not service credentials. To sign, run `npm run sign -- --key /private/publisher.pem`. Keep the publisher key outside the repository. The release workflow uses the `PLUGIN_SIGNING_KEY` Actions secret.
 
 [Plugin SDK](https://github.com/bugdeployer/Multiplexr/tree/main/packages/multiplexr_plugin_sdk) · GPL-3.0-only.
+
+
+The 0.3.0 preview adds movie and TV poster handles and an artwork provider.
+It needs the 0.5.2 app preview (SDK 1.3). Review the added artwork and catalog
+permissions and approve `https://image.tmdb.org` when importing the update.
+The API token is sent only to `https://api.themoviedb.org`; image downloads
+are public and do not receive it. Posters are fetched at w342 size for review.

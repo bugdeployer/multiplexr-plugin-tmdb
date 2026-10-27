@@ -1,6 +1,6 @@
 {
   "id": "com.bugdeployer.tmdb",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "name": "TMDB metadata",
   "entry": "plugin.js",
   "protocol": {
@@ -11,7 +11,9 @@
     "required": [
       "metadata.provide",
       "http.request",
-      "credentials.use"
+      "credentials.use",
+      "artwork.provide",
+      "catalog.read"
     ],
     "optional": []
   },
@@ -25,6 +27,14 @@
         "movie",
         "television"
       ]
+    },
+    {
+      "id": "com.bugdeployer.tmdb:artwork",
+      "family": "artwork.provider",
+      "title": "TMDB posters",
+      "handler": "artwork.search"
     }
-  ]
+  ],
+  "description": "Movie and TV information and posters from TMDB. Requires a TMDB API Read Access Token.",
+  "author": "bugdeployer"
 }
