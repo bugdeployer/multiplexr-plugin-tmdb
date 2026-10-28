@@ -15,7 +15,7 @@ function invoke(params = {}, options = {}) {
     assert.ok(['http.get','http.post'].includes(request.method));
     assert.equal(new URL(request.params.url).origin, origin);
     return JSON.stringify({v:1,id:request.id,...(options.denied ? {error:{code:'permission_denied'}} :
-      {result:{status:options.status ?? 200,body:options.body ?? JSON.stringify(request.params.url.includes('/search/') ? fixture : {genres:[{name:'Science Fiction'},{name:'Drama'}],credits:{crew:[{job:'Director',name:'Jane Director'},{job:'Writer',name:'Someone Else'}]},poster_path:'/ExamplePoster123.jpg',backdrop_path:'/ExampleBackdrop.jpg'})}})});
+      {result:{status:options.status ?? 200,body:options.body ?? (options.large && !request.params.url.includes('/search/') ? JSON.stringify({credits:{crew:[{job:'Director',name:'Jane Director'}],cast:Array.from({length:500},(_,i)=>({id:i,name:'Actor '+i,character:'A supporting character in the movie'}))},genres:[{name:'Adventure'}],poster_path:'/ExamplePoster123.jpg',backdrop_path:'/ExampleBackdrop.jpg'}) : JSON.stringify(request.params.url.includes('/search/') ? fixture : {genres:[{name:'Science Fiction'},{name:'Drama'}],credits:{crew:[{job:'Director',name:'Jane Director'},{job:'Writer',name:'Someone Else'}]},poster_path:'/ExamplePoster123.jpg',backdrop_path:'/ExampleBackdrop.jpg'}))}})});
   }});
   runInContext(artifact.code, context, {timeout:1000});
   const request = {v:1,id:'search',method:'metadata.search',params:{query:'Moon & stars',kind,...params}};
@@ -83,4 +83,11 @@ test('poster resolution returns only the approved image URL and never sends cred
   assert.equal(response.result.items.length,5);
   assert.equal(response.result.nextCursor,'3');
   assert.equal(calls.filter(c=>c.method.startsWith('http.')).length,6);
+});
+
+test('large TMDB credits pass through the signed bundle host transport', () => {
+  const {response}=invoke({}, {large:true});
+  assert.equal(response.error,undefined);
+  assert.equal(response.result.items[0].fields.director,'Jane Director');
+  assert.deepEqual(response.result.items[0].fields.genres,['Adventure']);
 });

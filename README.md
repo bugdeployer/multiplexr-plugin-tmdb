@@ -1,6 +1,6 @@
 # TMDB metadata for Multiplexr
 
-Searches movies and TV using TMDB. Returns title, synopsis, original language, release date, year and TMDB identity.
+Searches movies and TV using TMDB. Returns title, synopsis, director, genres, release year, poster and backdrop artwork.
 
 In **Manage > Permissions**, allow the collection and network destination. In **Manage > Credentials**, select `https://api.themoviedb.org` and paste your **API Read Access Token**, not the v3 API key. Enable the plugin, then choose TMDB in Find metadata.
 
@@ -8,7 +8,7 @@ Uses the [TMDB API](https://developer.themoviedb.org/docs/authentication-applica
 
 ## Install
 
-Requires the patched Multiplexr plugin host (0.5.1 or newer). Download the signed `.mpx.json` from Releases and install it through **Settings > Plugins & themes**. Review access before enabling. The 0.1.0 release was a starter and has no metadata handler.
+Requires the patched Multiplexr plugin host (0.5.1 or newer). In **Settings > Plugins > Browse**, find TMDB and choose Install or Update. File import is also available. Review access before enabling. The 0.1.0 release was a starter and has no metadata handler.
 
 ## Development
 
